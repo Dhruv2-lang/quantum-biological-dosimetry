@@ -474,22 +474,3 @@ For reproducible results:
 
 Model files serialized with libraries such as scikit-learn may not be compatible across different versions. For reproducibility, use compatible dependency versions and retain the training configuration.
 
----
-
-## 📄 License
-
-This project is intended to use the MIT License. Refer to the repository's `LICENSE` file for the actual license terms.
-
----
-
-## 👤 Author
-
-**Dhruv Singh**
-
-GitHub: [Dhruv2-lang](https://github.com/Dhruv2-lang)
-
-Repository: [Quantum Biological Dosimetry](https://github.com/Dhruv2-lang/quantum-biological-dosimetry)
-
----
-
-*This project is for educational and research purposes. Reported metrics are experimental results and should not be interpreted as evidence of clinical performance or medical readiness.*
