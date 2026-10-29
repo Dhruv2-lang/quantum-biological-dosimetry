@@ -5,7 +5,7 @@
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PennyLane](https://img.shields.io/badge/Quantum-PennyLane-purple.svg)](https://pennylane.ai/)
 [![Streamlit](https://img.shields.io/badge/App-Streamlit-red.svg)](https://streamlit.io/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 
 An experimental machine learning and quantum computing framework for studying radiation-associated biological damage using physical sensor measurements inspired by nitrogen-vacancy (NV) diamond sensing and quantum-dot spectroscopy.
 
@@ -30,7 +30,7 @@ The project compares classical machine learning models with a Variational Quantu
 - [Testing](#-testing)
 - [Limitations and Future Work](#-limitations-and-future-work)
 - [Reproducibility](#-reproducibility)
-- [License](#-license)
+
 
 ---
 
