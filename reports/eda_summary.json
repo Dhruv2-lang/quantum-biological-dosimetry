@@ -1,0 +1,117 @@
+{
+  "dataset_rows": 5000,
+  "dataset_cols": 14,
+  "missing_values": {
+    "Dose_Gy": 0,
+    "ODMR_Shift_MHz": 0,
+    "T1_us": 0,
+    "T2_us": 0,
+    "Fluorescence_Intensity": 0,
+    "Fluorescence_Lifetime_ns": 0,
+    "QD_Emission_nm": 0,
+    "ROS_Level": 0,
+    "Mitochondrial_Damage": 0,
+    "GammaH2AX_Foci": 0,
+    "BP53_Foci": 0,
+    "Cell_Viability": 0,
+    "DNA_Damage_Score": 0,
+    "Radiotoxicity_Class": 0
+  },
+  "duplicate_rows": 0,
+  "classification_target": "Radiotoxicity_Class",
+  "class_distribution": {
+    "Moderate": 1930,
+    "Low": 1851,
+    "High": 1219
+  },
+  "class_percentage": {
+    "Moderate": 38.6,
+    "Low": 37.02,
+    "High": 24.38
+  },
+  "regression_target": "DNA_Damage_Score",
+  "dna_damage_statistics": {
+    "count": 5000.0,
+    "mean": 33.4794,
+    "std": 18.8326,
+    "min": 0.0,
+    "25%": 17.2,
+    "50%": 33.665,
+    "75%": 49.6,
+    "max": 68.26
+  },
+  "dna_damage_by_radiotoxicity_class": {
+    "Low": {
+      "min": 0.0,
+      "max": 24.99,
+      "mean": 12.927585089141004,
+      "std": 6.854286136084741
+    },
+    "High": {
+      "min": 50.0,
+      "max": 68.26,
+      "mean": 58.19106644790813,
+      "std": 4.627994846602441
+    },
+    "Moderate": {
+      "min": 25.0,
+      "max": 49.97,
+      "mean": 37.5818860103627,
+      "std": 7.245322616056686
+    }
+  },
+  "sensor_features": [
+    "Dose_Gy",
+    "ODMR_Shift_MHz",
+    "T1_us",
+    "T2_us",
+    "Fluorescence_Intensity",
+    "Fluorescence_Lifetime_ns",
+    "QD_Emission_nm"
+  ],
+  "biological_measurements": [
+    "ROS_Level",
+    "Mitochondrial_Damage",
+    "GammaH2AX_Foci",
+    "BP53_Foci",
+    "Cell_Viability"
+  ],
+  "sensor_target_correlations": {
+    "Dose_Gy": {
+      "corr_with_DNA_Damage": 0.9972,
+      "corr_with_Dose": 1.0
+    },
+    "ODMR_Shift_MHz": {
+      "corr_with_DNA_Damage": 0.9905,
+      "corr_with_Dose": 0.9932
+    },
+    "T1_us": {
+      "corr_with_DNA_Damage": -0.9887,
+      "corr_with_Dose": -0.9913
+    },
+    "T2_us": {
+      "corr_with_DNA_Damage": -0.983,
+      "corr_with_Dose": -0.9856
+    },
+    "Fluorescence_Intensity": {
+      "corr_with_DNA_Damage": -0.983,
+      "corr_with_Dose": -0.9858
+    },
+    "Fluorescence_Lifetime_ns": {
+      "corr_with_DNA_Damage": -0.9899,
+      "corr_with_Dose": -0.9925
+    },
+    "QD_Emission_nm": {
+      "corr_with_DNA_Damage": 0.9931,
+      "corr_with_Dose": 0.9958
+    }
+  },
+  "biological_target_correlations": {
+    "ROS_Level": 0.9925,
+    "Mitochondrial_Damage": 0.986,
+    "GammaH2AX_Foci": 0.9949,
+    "BP53_Foci": 0.9894,
+    "Cell_Viability": -0.9889
+  },
+  "target_leakage_warning": "Biological measurements (ROS, Mitochondrial_Damage, GammaH2AX_Foci, BP53_Foci, Cell_Viability, DNA_Damage_Score) reflect cellular end-state assays and are nearly deterministic transformations or direct definition metrics of Radiotoxicity_Class. Using them to predict Radiotoxicity_Class or DNA_Damage_Score causes severe Target Leakage. Valid clinical/nanosensing models MUST predict damage strictly from quantum sensor features."
+}

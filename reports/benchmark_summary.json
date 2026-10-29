@@ -1,0 +1,64 @@
+{
+  "classification_comparison": [
+    {
+      "Model": "Logistic Regression",
+      "Type": "Classical ML",
+      "Accuracy (%)": 96.1,
+      "Macro-F1": 0.9614,
+      "Macro-Precision": 0.9627,
+      "Macro-Recall": 0.9603,
+      "Parameters / Architecture": "Linear Logits",
+      "Hardware / Target": "Classical CPU"
+    },
+    {
+      "Model": "Random Forest",
+      "Type": "Classical ML",
+      "Accuracy (%)": 95.8,
+      "Macro-F1": 0.9586,
+      "Macro-Precision": 0.959,
+      "Macro-Recall": 0.9582,
+      "Parameters / Architecture": "100 Trees / Ensemble",
+      "Hardware / Target": "Classical CPU"
+    },
+    {
+      "Model": "XGBoost",
+      "Type": "Classical ML",
+      "Accuracy (%)": 95.89999999999999,
+      "Macro-F1": 0.9594,
+      "Macro-Precision": 0.9597,
+      "Macro-Recall": 0.9591,
+      "Parameters / Architecture": "100 Trees / Ensemble",
+      "Hardware / Target": "Classical CPU"
+    },
+    {
+      "Model": "PennyLane 4-Qubit VQC",
+      "Type": "Variational Quantum Circuit",
+      "Accuracy (%)": 67.7,
+      "Macro-F1": 0.5806,
+      "Macro-Precision": 0.643,
+      "Macro-Recall": 0.611,
+      "Parameters / Architecture": "4 Qubits, 2 Layers (24 rot params)",
+      "Hardware / Target": "Quantum Simulator (default.qubit)"
+    }
+  ],
+  "regression_comparison": {
+    "Ridge Regression": {
+      "mse": 2.0945,
+      "rmse": 1.4472,
+      "mae": 1.1462,
+      "r2": 0.994
+    },
+    "Random Forest Regressor": {
+      "mse": 2.3259,
+      "rmse": 1.5251,
+      "mae": 1.2068,
+      "r2": 0.9933
+    }
+  },
+  "key_findings": [
+    "Classical models (Logistic Regression, Random Forest, XGBoost) achieved superior performance (~95.8% - 96.1% accuracy, ~0.96 Macro-F1).",
+    "The 4-Qubit Variational Quantum Classifier (VQC) demonstrated genuine parameter convergence (loss decreased from 0.998 to 0.549) and achieved 67.70% test accuracy on unseen data.",
+    "Quantum Advantage was NOT observed: classical gradient-boosted trees and linear classifiers dominate tabular sensor classification.",
+    "Target Leakage Audit confirmed that biological assay columns (foci counts, viability, DNA damage score) must be excluded; predicting directly from NV-center and quantum dot sensor measurements maintains non-invasive biodosimetry integrity."
+  ]
+}

@@ -1,0 +1,189 @@
+{
+  "classification": {
+    "Logistic Regression": {
+      "accuracy": 0.961,
+      "macro_f1": 0.9614,
+      "weighted_f1": 0.9611,
+      "macro_precision": 0.9627,
+      "macro_recall": 0.9603,
+      "confusion_matrix": [
+        [
+          233,
+          0,
+          11
+        ],
+        [
+          0,
+          357,
+          13
+        ],
+        [
+          7,
+          8,
+          371
+        ]
+      ],
+      "report": {
+        "Low": {
+          "precision": 0.9708333333333333,
+          "recall": 0.9549180327868853,
+          "f1-score": 0.9628099173553719,
+          "support": 244.0
+        },
+        "Moderate": {
+          "precision": 0.9780821917808219,
+          "recall": 0.9648648648648649,
+          "f1-score": 0.9714285714285714,
+          "support": 370.0
+        },
+        "High": {
+          "precision": 0.9392405063291139,
+          "recall": 0.961139896373057,
+          "f1-score": 0.9500640204865557,
+          "support": 386.0
+        },
+        "accuracy": 0.961,
+        "macro avg": {
+          "precision": 0.9627186771477564,
+          "recall": 0.960307598008269,
+          "f1-score": 0.961434169756833,
+          "support": 1000.0
+        },
+        "weighted avg": {
+          "precision": 0.9613205797352755,
+          "recall": 0.961,
+          "f1-score": 0.9610789031710928,
+          "support": 1000.0
+        }
+      }
+    },
+    "Random Forest": {
+      "accuracy": 0.958,
+      "macro_f1": 0.9586,
+      "weighted_f1": 0.9581,
+      "macro_precision": 0.959,
+      "macro_recall": 0.9582,
+      "confusion_matrix": [
+        [
+          234,
+          0,
+          10
+        ],
+        [
+          0,
+          356,
+          14
+        ],
+        [
+          9,
+          9,
+          368
+        ]
+      ],
+      "report": {
+        "Low": {
+          "precision": 0.9629629629629629,
+          "recall": 0.9590163934426229,
+          "f1-score": 0.9609856262833676,
+          "support": 244.0
+        },
+        "Moderate": {
+          "precision": 0.9753424657534246,
+          "recall": 0.9621621621621622,
+          "f1-score": 0.9687074829931973,
+          "support": 370.0
+        },
+        "High": {
+          "precision": 0.9387755102040817,
+          "recall": 0.9533678756476683,
+          "f1-score": 0.9460154241645244,
+          "support": 386.0
+        },
+        "accuracy": 0.958,
+        "macro avg": {
+          "precision": 0.9590269796401564,
+          "recall": 0.9581821437508178,
+          "f1-score": 0.9585695111470298,
+          "support": 1000.0
+        },
+        "weighted avg": {
+          "precision": 0.9582070222305056,
+          "recall": 0.958,
+          "f1-score": 0.9580642152481311,
+          "support": 1000.0
+        }
+      }
+    },
+    "XGBoost": {
+      "accuracy": 0.959,
+      "macro_f1": 0.9594,
+      "weighted_f1": 0.959,
+      "macro_precision": 0.9597,
+      "macro_recall": 0.9591,
+      "confusion_matrix": [
+        [
+          234,
+          0,
+          10
+        ],
+        [
+          0,
+          358,
+          12
+        ],
+        [
+          9,
+          10,
+          367
+        ]
+      ],
+      "report": {
+        "Low": {
+          "precision": 0.9629629629629629,
+          "recall": 0.9590163934426229,
+          "f1-score": 0.9609856262833676,
+          "support": 244.0
+        },
+        "Moderate": {
+          "precision": 0.9728260869565217,
+          "recall": 0.9675675675675676,
+          "f1-score": 0.9701897018970189,
+          "support": 370.0
+        },
+        "High": {
+          "precision": 0.9434447300771208,
+          "recall": 0.9507772020725389,
+          "f1-score": 0.9470967741935484,
+          "support": 386.0
+        },
+        "accuracy": 0.959,
+        "macro avg": {
+          "precision": 0.9597445933322019,
+          "recall": 0.959120387694243,
+          "f1-score": 0.959424034124645,
+          "support": 1000.0
+        },
+        "weighted avg": {
+          "precision": 0.9590782809466447,
+          "recall": 0.959,
+          "f1-score": 0.9590300373537484,
+          "support": 1000.0
+        }
+      }
+    }
+  },
+  "regression": {
+    "Ridge Regression": {
+      "mse": 2.0945,
+      "rmse": 1.4472,
+      "mae": 1.1462,
+      "r2": 0.994
+    },
+    "Random Forest Regressor": {
+      "mse": 2.3259,
+      "rmse": 1.5251,
+      "mae": 1.2068,
+      "r2": 0.9933
+    }
+  }
+}
