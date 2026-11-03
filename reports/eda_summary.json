@@ -18,6 +18,22 @@
     "Radiotoxicity_Class": 0
   },
   "duplicate_rows": 0,
+  "data_types": {
+    "Dose_Gy": "float64",
+    "ODMR_Shift_MHz": "float64",
+    "T1_us": "float64",
+    "T2_us": "float64",
+    "Fluorescence_Intensity": "float64",
+    "Fluorescence_Lifetime_ns": "float64",
+    "QD_Emission_nm": "float64",
+    "ROS_Level": "float64",
+    "Mitochondrial_Damage": "float64",
+    "GammaH2AX_Foci": "float64",
+    "BP53_Foci": "float64",
+    "Cell_Viability": "float64",
+    "DNA_Damage_Score": "float64",
+    "Radiotoxicity_Class": "str"
+  },
   "classification_target": "Radiotoxicity_Class",
   "class_distribution": {
     "Moderate": 1930,
