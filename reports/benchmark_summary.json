@@ -1,4 +1,9 @@
 {
+  "class_names": [
+    "High",
+    "Low",
+    "Moderate"
+  ],
   "classification_comparison": [
     {
       "Model": "Logistic Regression",
@@ -7,7 +12,7 @@
       "Macro-F1": 0.9614,
       "Macro-Precision": 0.9627,
       "Macro-Recall": 0.9603,
-      "Parameters / Architecture": "Linear Logits",
+      "Parameters / Architecture": "Linear Classifier",
       "Hardware / Target": "Classical CPU"
     },
     {
@@ -17,7 +22,7 @@
       "Macro-F1": 0.9586,
       "Macro-Precision": 0.959,
       "Macro-Recall": 0.9582,
-      "Parameters / Architecture": "100 Trees / Ensemble",
+      "Parameters / Architecture": "Random Forest Ensemble",
       "Hardware / Target": "Classical CPU"
     },
     {
@@ -27,17 +32,17 @@
       "Macro-F1": 0.9594,
       "Macro-Precision": 0.9597,
       "Macro-Recall": 0.9591,
-      "Parameters / Architecture": "100 Trees / Ensemble",
+      "Parameters / Architecture": "Gradient Boosted Trees",
       "Hardware / Target": "Classical CPU"
     },
     {
       "Model": "PennyLane 4-Qubit VQC",
       "Type": "Variational Quantum Circuit",
-      "Accuracy (%)": 67.7,
-      "Macro-F1": 0.5806,
-      "Macro-Precision": 0.643,
-      "Macro-Recall": 0.611,
-      "Parameters / Architecture": "4 Qubits, 2 Layers (24 rot params)",
+      "Accuracy (%)": 68.30000000000001,
+      "Macro-F1": 0.6386,
+      "Macro-Precision": 0.6528,
+      "Macro-Recall": 0.6406,
+      "Parameters / Architecture": "4 Qubits, 2 Layers (24 variational parameters)",
       "Hardware / Target": "Quantum Simulator (default.qubit)"
     }
   ],
@@ -56,9 +61,11 @@
     }
   },
   "key_findings": [
-    "Classical models (Logistic Regression, Random Forest, XGBoost) achieved superior performance (~95.8% - 96.1% accuracy, ~0.96 Macro-F1).",
-    "The 4-Qubit Variational Quantum Classifier (VQC) demonstrated genuine parameter convergence (loss decreased from 0.998 to 0.549) and achieved 67.70% test accuracy on unseen data.",
-    "Quantum Advantage was NOT observed: classical gradient-boosted trees and linear classifiers dominate tabular sensor classification.",
-    "Target Leakage Audit confirmed that biological assay columns (foci counts, viability, DNA damage score) must be excluded; predicting directly from NV-center and quantum dot sensor measurements maintains non-invasive biodosimetry integrity."
+    "Logistic Regression achieved the highest classification accuracy at 96.10%.",
+    "The PennyLane 4-Qubit VQC achieved 68.30% accuracy and a Macro-F1 score of 0.6386.",
+    "The best classical model achieved 96.10% accuracy.",
+    "The accuracy difference between the best classical model and the quantum VQC is 27.80 percentage points.",
+    "These results do not demonstrate quantum advantage. The quantum model was evaluated using a classical quantum-circuit simulator.",
+    "Biological assay columns and DNA damage score must remain excluded from classifier inputs to avoid target leakage."
   ]
 }
