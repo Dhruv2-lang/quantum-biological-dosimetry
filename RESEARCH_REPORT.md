@@ -1,9 +1,9 @@
 # Comparative Evaluation of Classical Machine Learning, Variational Quantum Classifiers (VQC), and Quantum Support Vector Machines (QSVM) for Quantum Biological Dosimetry
 
-**Author:** Quantum Biophysics & Machine Learning Research Team
-**Date:** November 2026
-**Dataset Artifact:** `Quantum_Biological_Dosimetry_Dataset_5000.csv` ($N = 5,000$ verified authentic rows)
-**Project Workspace:** `/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry`
+**Author:** Quantum Biophysics & Machine Learning Research Team  
+**Date:** November 2026  
+**Dataset Artifact:** `Quantum_Biological_Dosimetry_Dataset_5000.csv` (N = 5,000 verified authentic rows)  
+**Project Workspace:** Project root directory
 
 ---
 

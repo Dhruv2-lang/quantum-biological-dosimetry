@@ -36,8 +36,11 @@ if BASE_DIR not in sys.path:
 
 from src.models_qsvm import QSVMClassifier, load_qsvm_classifier
 
-MODELS_DIR = "/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry/models"
-REPORTS_DIR = "/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry/reports"
+# Resolve project directories from this file's location so the project works
+# on other computers and does not depend on a specific user's home directory.
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
+REPORTS_DIR = os.path.join(PROJECT_ROOT, "reports")
 FIGURES_DIR = os.path.join(REPORTS_DIR, "figures")
 
 def generate_comparisons():
