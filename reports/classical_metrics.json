@@ -5,7 +5,13 @@
       "macro_f1": 0.9614,
       "weighted_f1": 0.9611,
       "macro_precision": 0.9627,
+      "weighted_precision": 0.9613,
       "macro_recall": 0.9603,
+      "weighted_recall": 0.961,
+      "roc_auc": 0.9971,
+      "generalization_error": 0.039,
+      "training_time_seconds": 0.0413,
+      "inference_time_seconds": 0.0002,
       "confusion_matrix": [
         [
           233,
@@ -67,7 +73,13 @@
       "macro_f1": 0.9586,
       "weighted_f1": 0.9581,
       "macro_precision": 0.959,
+      "weighted_precision": 0.9582,
       "macro_recall": 0.9582,
+      "weighted_recall": 0.958,
+      "roc_auc": 0.9975,
+      "generalization_error": 0.042,
+      "training_time_seconds": 0.2427,
+      "inference_time_seconds": 0.0056,
       "confusion_matrix": [
         [
           234,
@@ -129,7 +141,13 @@
       "macro_f1": 0.9594,
       "weighted_f1": 0.959,
       "macro_precision": 0.9597,
+      "weighted_precision": 0.9591,
       "macro_recall": 0.9591,
+      "weighted_recall": 0.959,
+      "roc_auc": 0.9964,
+      "generalization_error": 0.041,
+      "training_time_seconds": 0.0912,
+      "inference_time_seconds": 0.0032,
       "confusion_matrix": [
         [
           234,
@@ -185,6 +203,69 @@
           "support": 1000.0
         }
       }
+    },
+    "Classical SVM": {
+      "accuracy": 0.963,
+      "macro_f1": 0.9634,
+      "weighted_f1": 0.963,
+      "macro_precision": 0.9632,
+      "weighted_precision": 0.963,
+      "macro_recall": 0.9636,
+      "weighted_recall": 0.963,
+      "roc_auc": 0.9971,
+      "generalization_error": 0.037,
+      "training_time_seconds": 8.5896,
+      "inference_time_seconds": 0.0142,
+      "confusion_matrix": [
+        [
+          236,
+          0,
+          8
+        ],
+        [
+          0,
+          359,
+          11
+        ],
+        [
+          9,
+          9,
+          368
+        ]
+      ],
+      "report": {
+        "Low": {
+          "precision": 0.963265306122449,
+          "recall": 0.9672131147540983,
+          "f1-score": 0.9652351738241309,
+          "support": 244.0
+        },
+        "Moderate": {
+          "precision": 0.9755434782608695,
+          "recall": 0.9702702702702702,
+          "f1-score": 0.9728997289972899,
+          "support": 370.0
+        },
+        "High": {
+          "precision": 0.9509043927648578,
+          "recall": 0.9533678756476683,
+          "f1-score": 0.9521345407503234,
+          "support": 386.0
+        },
+        "accuracy": 0.963,
+        "macro avg": {
+          "precision": 0.9632377257160588,
+          "recall": 0.9636170868906789,
+          "f1-score": 0.9634231478572483,
+          "support": 1000.0
+        },
+        "weighted avg": {
+          "precision": 0.9630369172576344,
+          "recall": 0.963,
+          "f1-score": 0.96301421487171,
+          "support": 1000.0
+        }
+      }
     }
   },
   "regression": {
@@ -192,13 +273,17 @@
       "mse": 2.0945,
       "rmse": 1.4472,
       "mae": 1.1462,
-      "r2": 0.994
+      "r2": 0.994,
+      "training_time_seconds": 0.0102,
+      "inference_time_seconds": 0.0002
     },
     "Random Forest Regressor": {
       "mse": 2.3259,
       "rmse": 1.5251,
       "mae": 1.2068,
-      "r2": 0.9933
+      "r2": 0.9933,
+      "training_time_seconds": 0.9437,
+      "inference_time_seconds": 0.0185
     }
   },
   "class_names": [

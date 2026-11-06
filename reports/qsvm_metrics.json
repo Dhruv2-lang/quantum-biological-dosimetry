@@ -1,0 +1,70 @@
+{
+  "model_name": "Quantum Support Vector Machine (QSVM)",
+  "type": "Quantum Kernel Machine",
+  "accuracy": 0.959,
+  "macro_f1": 0.96,
+  "weighted_f1": 0.9588,
+  "macro_precision": 0.9583,
+  "weighted_precision": 0.9592,
+  "macro_recall": 0.9622,
+  "weighted_recall": 0.959,
+  "roc_auc": 0.9968,
+  "generalization_error": 0.041,
+  "training_time_seconds": 0.0944,
+  "inference_time_seconds": 0.23,
+  "kernel_properties": {
+    "is_symmetric": true,
+    "min_eigenvalue": -0.0,
+    "mean_diagonal": 1.0
+  },
+  "confusion_matrix": [
+    [
+      240,
+      0,
+      4
+    ],
+    [
+      0,
+      361,
+      9
+    ],
+    [
+      12,
+      16,
+      358
+    ]
+  ],
+  "report": {
+    "High": {
+      "precision": 0.9523809523809523,
+      "recall": 0.9836065573770492,
+      "f1-score": 0.967741935483871,
+      "support": 244.0
+    },
+    "Low": {
+      "precision": 0.9575596816976127,
+      "recall": 0.9756756756756757,
+      "f1-score": 0.9665327978580991,
+      "support": 370.0
+    },
+    "Moderate": {
+      "precision": 0.9649595687331537,
+      "recall": 0.927461139896373,
+      "f1-score": 0.9458388375165125,
+      "support": 386.0
+    },
+    "accuracy": 0.959,
+    "macro avg": {
+      "precision": 0.9583000676039063,
+      "recall": 0.9622477909830326,
+      "f1-score": 0.9600378569528276,
+      "support": 1000.0
+    },
+    "weighted avg": {
+      "precision": 0.9591524281400664,
+      "recall": 0.959,
+      "f1-score": 0.9588399587469351,
+      "support": 1000.0
+    }
+  }
+}
