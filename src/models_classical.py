@@ -10,6 +10,7 @@ Saves all model artifacts, metric reports, and evaluation plots.
 """
 
 import os
+from pathlib import Path
 import json
 import time
 import warnings
@@ -39,9 +40,10 @@ from sklearn.metrics import (
     r2_score
 )
 
-MODELS_DIR = "/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry/models"
-REPORTS_DIR = "/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry/reports"
-FIGURES_DIR = os.path.join(REPORTS_DIR, "figures")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+MODELS_DIR = PROJECT_ROOT / "models"
+REPORTS_DIR = PROJECT_ROOT / "reports"
+FIGURES_DIR = REPORTS_DIR / "figures"
 
 def train_and_evaluate_classical():
     os.makedirs(MODELS_DIR, exist_ok=True)
