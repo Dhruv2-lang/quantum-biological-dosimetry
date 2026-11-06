@@ -2,7 +2,7 @@
 
 ## Project Overview
 - **Objective:** Predict radiation-induced biological damage from quantum sensor measurements (NV diamond ODMR, relaxometry T1/T2, Quantum Dot emission & lifetime) and benchmark Classical ML models against a PennyLane Variational Quantum Classifier (VQC) and a Qiskit Quantum Support Vector Machine (QSVM).
-- **Workspace:** `/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry`
+- **Workspace:** Project root directory
 - **Dataset:** `Quantum_Biological_Dosimetry_Dataset_5000.csv` (5,000 verified authentic rows)
 
 ---
