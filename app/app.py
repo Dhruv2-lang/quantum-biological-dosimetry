@@ -2,15 +2,16 @@
 Streamlit Dashboard for Quantum Biological Dosimetry.
 Supports:
 1. Dataset Exploration & Sensor Physics EDA
-2. Single-Sample Real-Time Inference (Classical & Quantum VQC)
+2. Single-Sample Real-Time Inference (Classical ML, Classical SVM, PennyLane VQC, Qiskit QSVM)
 3. Batch CSV Inference & Export
-4. Benchmark Comparison Leaderboard & Confusion Matrices
+4. Benchmark Comparison Leaderboard & Performance Diagnostics across 6 Models
 5. Research Context, Sensor Principles & Problem 7 Disambiguation
 
 Architectural Hardening on macOS ARM64:
 - Pins OpenMP execution to single-threaded mode to prevent multiple libomp collision.
 - Uses headless Agg Matplotlib backend to prevent Cocoa/AppKit main-thread violations.
 - Evaluates PennyLane VQC with pure NumPy statevector simulation at serving time.
+- Evaluates Qiskit QSVM with statevector fidelity kernel computation at serving time.
 - Handles scikit-learn cross-version and Streamlit use_container_width deprecation warnings.
 """
 
@@ -50,7 +51,8 @@ if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 from src.preprocessing import PreprocessingPipeline
-from src.models_quantum import load_qnn_classifier
+from src.models_quantum import load_qnn_classifier, TrainedQNNWrapper
+from src.models_qsvm import load_qsvm_classifier, QSVMClassifier
 
 DATA_PATH = os.path.join(BASE_DIR, "data", "Quantum_Biological_Dosimetry_Dataset_5000.csv")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
@@ -113,7 +115,9 @@ def load_models_and_preprocessor():
         "Logistic Regression": joblib.load(os.path.join(MODELS_DIR, "logistic_regression.joblib")),
         "Random Forest": joblib.load(os.path.join(MODELS_DIR, "random_forest.joblib")),
         "XGBoost": xgb_model,
+        "Classical SVM": joblib.load(os.path.join(MODELS_DIR, "svm_classifier.joblib")),
         "PennyLane 4-Qubit VQC": load_qnn_classifier(os.path.join(MODELS_DIR, "qnn_vqc.joblib")),
+        "Quantum Support Vector Machine (QSVM)": load_qsvm_classifier(os.path.join(MODELS_DIR, "qsvm_classifier.joblib")),
         "Ridge Regressor (DNA Damage)": joblib.load(os.path.join(MODELS_DIR, "ridge_regression.joblib")),
         "Random Forest Regressor (DNA Damage)": joblib.load(os.path.join(MODELS_DIR, "random_forest_regressor.joblib")),
     }
@@ -124,14 +128,16 @@ def load_reports():
     eda_path = os.path.join(REPORTS_DIR, "eda_summary.json")
     bench_path = os.path.join(REPORTS_DIR, "benchmark_summary.json")
     q_path = os.path.join(REPORTS_DIR, "quantum_metrics.json")
+    qsvm_path = os.path.join(REPORTS_DIR, "qsvm_metrics.json")
     
     eda_data = json.load(open(eda_path)) if os.path.exists(eda_path) else {}
     bench_data = json.load(open(bench_path)) if os.path.exists(bench_path) else {}
     q_data = json.load(open(q_path)) if os.path.exists(q_path) else {}
-    return eda_data, bench_data, q_data
+    qsvm_data = json.load(open(qsvm_path)) if os.path.exists(qsvm_path) else {}
+    return eda_data, bench_data, q_data, qsvm_data
 
 df = load_data()
-eda_summary, bench_summary, quantum_metrics = load_reports()
+eda_summary, bench_summary, quantum_metrics, qsvm_metrics = load_reports()
 
 # Sidebar
 st.sidebar.title("⚛️ Quantum Biodosimetry")
@@ -152,7 +158,7 @@ page = st.sidebar.radio(
 )
 st.sidebar.markdown("---")
 st.sidebar.info(
-    "**Integrity Note:** Only 7 quantum sensor features are used. "
+    "**Strict Integrity Note:** Only 7 quantum sensor features are used. "
     "Downstream biological assays are excluded to prevent target leakage."
 )
 
@@ -197,8 +203,9 @@ if page == "Dataset & Sensor EDA":
 elif page == "Single Prediction":
     st.header("🔮 Real-Time Single-Sample Inference")
     st.markdown(
-        "Simulate quantum sensor readings from an irradiated biosample. Select a classical model "
-        "or the 4-qubit Variational Quantum Classifier (VQC) to predict radiotoxicity and DNA damage score."
+        "Simulate quantum sensor readings from an irradiated biosample. Select a classical model, "
+        "Classical SVM, PennyLane 4-Qubit VQC, or Qiskit Quantum Support Vector Machine (QSVM) "
+        "to predict radiotoxicity and DNA damage score."
     )
 
     preprocessor, models = load_models_and_preprocessor()
@@ -240,7 +247,14 @@ elif page == "Single Prediction":
         qd = st.slider("QD Emission Peak (nm)", 530.0, 575.0, float(defaults["QD_Emission_nm"]), 0.1)
         model_choice = st.selectbox(
             "Classification Model",
-            ["Logistic Regression", "Random Forest", "XGBoost", "PennyLane 4-Qubit VQC"]
+            [
+                "Classical SVM",
+                "Quantum Support Vector Machine (QSVM)",
+                "Logistic Regression",
+                "Random Forest",
+                "XGBoost",
+                "PennyLane 4-Qubit VQC"
+            ]
         )
         reg_model_choice = st.selectbox(
             "Regression Model (DNA Damage)",
@@ -263,7 +277,7 @@ elif page == "Single Prediction":
         reg = models[reg_model_choice]
 
         # Classification prediction
-        if model_choice == "PennyLane 4-Qubit VQC":
+        if model_choice in ["PennyLane 4-Qubit VQC", "Quantum Support Vector Machine (QSVM)"]:
             probs = clf.predict_proba(transformed["pca4"])[0]
             pred_idx = np.argmax(probs)
         else:
@@ -298,13 +312,26 @@ elif page == "Single Prediction":
             st.progress(dna_score / 100.0)
             st.caption(f"Calculated via {reg_model_choice}")
 
-            if model_choice == "PennyLane 4-Qubit VQC":
-                st.info(
-                    "⚛️ **Quantum Execution Detail:**\n"
-                    "- 4 PCA-encoded features embedded via `AngleEmbedding(Y)`.\n"
-                    "- 2 layers of `StronglyEntanglingLayers` rotated state vector.\n"
-                    "- Measured expectation values: $\\langle Z_0 \\rangle, \\langle Z_1 \\rangle, \\langle Z_2 \\rangle$."
-                )
+        if model_choice == "PennyLane 4-Qubit VQC":
+            st.info(
+                "⚛️ **Quantum Execution Detail (PennyLane VQC):**\n"
+                "- 4 PCA-encoded features embedded via `AngleEmbedding(Y)`.\n"
+                "- 2 layers of `StronglyEntanglingLayers` rotated state vector.\n"
+                "- Measured expectation values: $\\langle Z_0 \\rangle, \\langle Z_1 \\rangle, \\langle Z_2 \\rangle$."
+            )
+        elif model_choice == "Quantum Support Vector Machine (QSVM)":
+            st.info(
+                "⚛️ **Quantum Execution Detail (Qiskit QSVM):**\n"
+                "- 4 PCA-encoded features embedded into 4 qubits via Qiskit `ZZFeatureMap(reps=1, entanglement='linear')`.\n"
+                "- Quantum Kernel fidelity metric: $K(x_1, x_2) = |\\langle \\phi(x_1) | \\phi(x_2) \\rangle|^2$.\n"
+                "- Evaluated against $N=360$ support vector anchors; dual SVM optimization with $C=5.0$, `class_weight='balanced'`."
+            )
+        elif model_choice == "Classical SVM":
+            st.info(
+                "⚡ **Classical Model Detail (SVM):**\n"
+                "- Radial Basis Function (RBF) kernel: $K(x_1, x_2) = \\exp(-\\gamma ||x_1 - x_2||^2)$.\n"
+                "- Tuned hyperparameters: $C=5.0$, $\\gamma=0.05$, class-balanced weights."
+            )
 
 # ----------------- TAB 3: BATCH CSV PREDICTION -----------------
 elif page == "Batch CSV Prediction":
@@ -338,7 +365,14 @@ elif page == "Batch CSV Prediction":
             else:
                 batch_model = st.selectbox(
                     "Select Inference Model for Batch:",
-                    ["Logistic Regression", "Random Forest", "XGBoost", "PennyLane 4-Qubit VQC"]
+                    [
+                        "Classical SVM",
+                        "Quantum Support Vector Machine (QSVM)",
+                        "Logistic Regression",
+                        "Random Forest",
+                        "XGBoost",
+                        "PennyLane 4-Qubit VQC"
+                    ]
                 )
 
                 if st.button("Run Batch Inference"):
@@ -347,7 +381,7 @@ elif page == "Batch CSV Prediction":
                         clf = models[batch_model]
                         reg = models["Ridge Regressor (DNA Damage)"]
 
-                        if batch_model == "PennyLane 4-Qubit VQC":
+                        if batch_model in ["PennyLane 4-Qubit VQC", "Quantum Support Vector Machine (QSVM)"]:
                             probs = clf.predict_proba(t_data["pca4"])
                             preds = clf.predict(t_data["pca4"])
                         else:
@@ -378,8 +412,8 @@ elif page == "Batch CSV Prediction":
 elif page == "Benchmark Leaderboard":
     st.header("📈 Model Benchmark Leaderboard")
     st.markdown(
-        "Empirical head-to-head comparison between Classical ML baselines and the "
-        "PennyLane 4-Qubit Variational Quantum Classifier (VQC) on 1,000 unseen test samples."
+        "Empirical head-to-head comparison across **6 Classification Models** (Classical ML, Classical SVM, "
+        "PennyLane VQC, and Qiskit QSVM) on 1,000 unseen test samples."
     )
 
     if bench_summary and "classification_comparison" in bench_summary:
@@ -390,19 +424,38 @@ elif page == "Benchmark Leaderboard":
         for finding in bench_summary.get("key_findings", []):
             st.markdown(f"- {finding}")
 
-        st.subheader("Performance Comparison Plots")
-        render_image(os.path.join(FIGURES_DIR, "model_comparison_benchmark.png"), caption="Accuracy & Macro-F1 Benchmark Across Models")
+        st.subheader("Overall Benchmark Comparison")
+        render_image(os.path.join(FIGURES_DIR, "model_comparison_benchmark.png"), caption="Accuracy, Macro-F1 & ROC-AUC Benchmark Across Models")
 
-        st.subheader("Combined Confusion Matrices")
-        render_image(os.path.join(FIGURES_DIR, "all_confusion_matrices_combined.png"), caption="Confusion Matrices across all 4 Evaluated Architectures")
+        col_diag1, col_diag2 = st.columns(2)
+        with col_diag1:
+            st.subheader("Precision, Recall & F1-Score Breakdown")
+            render_image(os.path.join(FIGURES_DIR, "precision_recall_f1_comparison.png"), caption="Macro-Averaged Precision, Recall, and F1 Metrics")
+        with col_diag2:
+            st.subheader("Generalization Error (1 - Accuracy)")
+            render_image(os.path.join(FIGURES_DIR, "generalization_error_comparison.png"), caption="Generalization Error on 1,000 Test Samples")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            st.subheader("PennyLane VQC Convergence Curve")
+        col_diag3, col_diag4 = st.columns(2)
+        with col_diag3:
+            st.subheader("Training & Inference Latency")
+            render_image(os.path.join(FIGURES_DIR, "training_inference_time_comparison.png"), caption="Log-Scale Latency Comparison Across Models")
+        with col_diag4:
+            st.subheader("Multiclass ROC Curves (One-vs-Rest)")
+            render_image(os.path.join(FIGURES_DIR, "multiclass_roc_curves.png"), caption="One-vs-Rest Micro-Averaged ROC Curves")
+
+        st.subheader("Combined Confusion Matrices (All 6 Models)")
+        render_image(os.path.join(FIGURES_DIR, "all_confusion_matrices_combined.png"), caption="Confusion Matrices across all 6 Evaluated Architectures")
+
+        col_q1, col_q2 = st.columns(2)
+        with col_q1:
+            st.subheader("Quantum Kernel Gram Matrix (QSVM)")
+            render_image(os.path.join(FIGURES_DIR, "qsvm_kernel_matrix.png"), caption="Quantum Kernel Fidelity Matrix K(xi, xj) on 50x50 Subspace")
+        with col_q2:
+            st.subheader("PennyLane VQC Optimization Trajectory")
             render_image(os.path.join(FIGURES_DIR, "qnn_training_curve.png"), caption="Loss and Accuracy Trajectories during Quantum Circuit Optimization")
-        with col2:
-            st.subheader("DNA Damage Score Regression Fit")
-            render_image(os.path.join(FIGURES_DIR, "regression_evaluation.png"), caption="Actual vs Predicted DNA Damage Score (R² > 0.99)")
+
+        st.subheader("DNA Damage Score Regression Fit")
+        render_image(os.path.join(FIGURES_DIR, "regression_evaluation.png"), caption="Actual vs Predicted DNA Damage Score (R² > 0.99)")
 
 # ----------------- TAB 5: SENSOR PHYSICS & DISAMBIGUATION -----------------
 elif page == "Sensor Physics & Disambiguation":
@@ -427,6 +480,8 @@ elif page == "Sensor Physics & Disambiguation":
     st.subheader("3. Scientific Integrity & Absence of Quantum Advantage")
     st.warning("""
     **Honest Scientific Appraisal:**
-    - **No Quantum Advantage:** Classical models (Logistic Regression, Random Forest, XGBoost) achieved superior classification accuracy (~96%) and near-instant inference compared to the simulated 4-qubit VQC (~67.7%). On low-dimensional tabular data, classical gradient boosting remains state-of-the-art.
+    - **Empirical Leaderboard:** Classical SVM achieved the highest test accuracy (**96.30%**), closely followed by Logistic Regression (**96.10%**), Qiskit QSVM (**95.90%**), XGBoost (**95.90%**), and Random Forest (**95.80%**). The PennyLane 4-qubit VQC achieved **67.70%**.
+    - **QSVM vs VQC:** QSVM drastically outperforms VQC on this tabular task (95.90% vs 67.70%). Because quantum kernel methods evaluate state fidelities directly and solve a convex quadratic program, they avoid variational parameter optimization and barren plateaus.
+    - **Absence of Quantum Advantage:** Classical SVM edges out QSVM in accuracy (96.30% vs 95.90%) and runs ~25x faster on inference (0.014s vs 0.363s). On tabular sensor data, quantum kernel machines provide comparable expressive capacity but no computational speedup or quantum advantage.
     - **No Clinical Validity Claim:** This simulator and dataset represent preclinical nanophotonic experimental models. No claims of immediate clinical diagnostic validity or human in vivo efficacy are made.
     """)

@@ -33,3 +33,21 @@ htmlcov/
 # Temporary files
 *.tmp
 quantum_biodosimetry.zip
+
+# Backup files
+backup/
+*_failed_backup.py
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# Project archive
+quantum_biodosimetry.zip
