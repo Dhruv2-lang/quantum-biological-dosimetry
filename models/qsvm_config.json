@@ -1,0 +1,17 @@
+{
+  "model_name": "Quantum Support Vector Machine (QSVM)",
+  "framework": "Qiskit Machine Learning",
+  "quantum_feature_map": "ZZFeatureMap",
+  "feature_dimension": 4,
+  "reps": 1,
+  "entanglement": "linear",
+  "scale_factor": 0.15,
+  "kernel_type": "FidelityQuantumKernel (| <phi(x1)|phi(x2)> |^2)",
+  "classical_classifier": "sklearn.svm.SVC(kernel='precomputed')",
+  "C_parameter": 5.0,
+  "class_weight": "balanced",
+  "random_state": 42,
+  "training_subset_size": 360,
+  "test_sample_count": 1000,
+  "qiskit_version": "2.6.2"
+}

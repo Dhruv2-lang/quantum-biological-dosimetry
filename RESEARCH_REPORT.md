@@ -1,14 +1,14 @@
-# Comparative Evaluation of Classical Machine Learning and Variational Quantum Classifiers for Quantum Biological Dosimetry
+# Comparative Evaluation of Classical Machine Learning, Variational Quantum Classifiers (VQC), and Quantum Support Vector Machines (QSVM) for Quantum Biological Dosimetry
 
-**Author:** Quantum Biophysics & Machine Learning Research Team  
-**Date:** October 2026  
-**Dataset Artifact:** `Quantum_Biological_Dosimetry_Dataset_5000.csv` (N = 5,000)  
+**Author:** Quantum Biophysics & Machine Learning Research Team
+**Date:** November 2026
+**Dataset Artifact:** `Quantum_Biological_Dosimetry_Dataset_5000.csv` ($N = 5,000$ verified authentic rows)
 **Project Workspace:** `/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry`
 
 ---
 
 ## Abstract
-Rapid, non-destructive assessment of radiation-induced cellular and genetic damage is a critical imperative in radiation oncology, space exploration, and nuclear emergency response. Conventional cytogenetic biodosimetry assays (e.g., dicentric chromosome analysis, $\gamma$-H2AX foci counting) are labor-intensive, destructive, and delayed by hours or days. Nanoscale quantum sensors—specifically optically detected magnetic resonance (ODMR) and spin relaxometry ($T_1, T_2$) in nitrogen-vacancy (NV) diamond centers, paired with quantum dot (QD) photoluminescence telemetry—offer an immediate, non-invasive physical sensing modality. Here, we present a rigorous machine learning framework benchmarked on an authentic 5,000-sample dataset, comparing classical algorithms (Logistic Regression, Random Forest, XGBoost) against a genuine 4-qubit PennyLane Variational Quantum Classifier (VQC). We enforce a strict target-leakage quarantine, proving that downstream biological assays (`DNA_Damage_Score`, foci counts) must be withheld during inference to avoid artificial predictability. On 1,000 unseen test samples, classical models achieved near-optimal classification performance (Logistic Regression: 96.10% accuracy, 0.9614 Macro-F1; XGBoost: 95.90% accuracy, 0.9594 Macro-F1) and high-fidelity continuous damage regression ($R^2 = 0.9940$). Conversely, the 4-qubit VQC demonstrated genuine parameter convergence (loss descending from 0.998 to 0.549) to achieve 67.70% test accuracy and 0.5601 Macro-F1. We analyze the absence of quantum advantage in low-dimensional tabular regimes, clarify the fundamental distinction between scalar telemetry and Problem 7 ("Quantum-Centric Image Processing"), and establish boundaries regarding preclinical validity.
+Rapid, non-destructive assessment of radiation-induced cellular and genetic damage is a critical imperative in radiation oncology, space exploration, and nuclear emergency response. Conventional cytogenetic biodosimetry assays (e.g., dicentric chromosome analysis, $\gamma$-H2AX foci counting) are labor-intensive, destructive, and delayed by hours or days. Nanoscale quantum sensors—specifically optically detected magnetic resonance (ODMR) and spin relaxometry ($T_1, T_2$) in nitrogen-vacancy (NV) diamond centers, paired with quantum dot (QD) photoluminescence telemetry—offer an immediate, non-invasive physical sensing modality. Here, we present a comprehensive machine learning and quantum computing framework benchmarked on an authentic 5,000-sample dataset, comparing four classical algorithms (Logistic Regression, Random Forest, XGBoost, and Classical RBF SVM) against two genuine quantum learning paradigms: a 4-qubit PennyLane Variational Quantum Classifier (VQC) and a 4-qubit Qiskit Quantum Support Vector Machine (QSVM) using a $ZZ$-feature map fidelity kernel. We enforce a strict target-leakage quarantine, proving that downstream biological assays (`DNA_Damage_Score`, foci counts) must be withheld during inference to avoid artificial predictability. On 1,000 unseen test samples, Classical SVM achieved top classification performance (**96.30%** accuracy, **0.9634** Macro-F1, **0.9971** ROC-AUC) and continuous damage regression achieved $R^2 = 0.9940$. The Qiskit 4-qubit QSVM achieved an impressive **95.90%** test accuracy and **0.9601** Macro-F1, dramatically surpassing the PennyLane 4-qubit VQC (**67.70%** accuracy, **0.5601** Macro-F1). We provide an in-depth mathematical analysis of why quantum kernel methods succeed where variational circuits struggle, analyze the absence of quantum advantage over classical RBF SVM in tabular regimes, clarify the fundamental distinction between scalar telemetry and Problem 7 ("Quantum-Centric Image Processing"), and establish boundaries regarding preclinical validity.
 
 ---
 
@@ -16,13 +16,13 @@ Rapid, non-destructive assessment of radiation-induced cellular and genetic dama
 
 Ionizing radiation generates bursts of reactive oxygen and nitrogen species (ROS/RNS) that induce double-strand DNA breaks, lipid peroxidation, and mitochondrial decoupling. Classical assays measure these macroscopic end-states through destructive chemical staining. In contrast, quantum biosensors transduce early biophysical microenvironmental changes at nanoscale spatial resolution:
 
-1. **Optically Detected Magnetic Resonance (ODMR) Shift ($\Delta D$ in MHz):**  
+1. **Optically Detected Magnetic Resonance (ODMR) Shift ($\Delta D$ in MHz):**
    The negatively charged nitrogen-vacancy center ($NV^-$) has a spin-1 ground state with zero-field splitting $D \approx 2.87\text{ GHz}$. Local magnetic dipoles generated by paramagnetic free radicals and local crystal lattice thermal/strain gradients induce Zeeman and Stark shifts in the resonance frequency:
    $$\Delta \nu_{\pm} = \gamma_e B_z \pm \sqrt{\left(\frac{3}{2} d_{\parallel} E_z\right)^2 + (\Delta D)^2}$$
-2. **Spin-Lattice ($T_1$) and Spin-Spin ($T_2$) Relaxometry ($\mu\text{s}$):**  
+2. **Spin-Lattice ($T_1$) and Spin-Spin ($T_2$) Relaxometry ($\mu\text{s}$):**
    Paramagnetic fluctuating magnetic noise produced by unpaired electrons in radical species drives spin relaxation, shortening $T_1$ and $T_2$:
    $$\frac{1}{T_1} = \frac{1}{T_{1,\text{lattice}}} + \gamma_e^2 S_{\text{noise}}(\omega_0)$$
-3. **Quantum Dot (QD) Spectral Shift & Photoluminescence Lifetime:**  
+3. **Quantum Dot (QD) Spectral Shift & Photoluminescence Lifetime:**
    Colloidal core-shell nanocrystals experience spectral bathochromic shifts ($\Delta \lambda$ in nm) and non-radiative exciton quenching ($\tau_{\text{PL}}$ in ns) caused by surface ligand degradation in acidified, oxidizing radiation fields.
 
 By aggregating these 7 continuous scalar variables (`Dose_Gy`, `ODMR_Shift_MHz`, `T1_us`, `T2_us`, `Fluorescence_Intensity`, `Fluorescence_Lifetime_ns`, `QD_Emission_nm`), the physical sensor array captures an orthogonal footprint of acute radiotoxicity.
@@ -44,7 +44,7 @@ Exploratory audit revealed that `Radiotoxicity_Class` is a direct deterministic 
 - **Moderate:** $\text{DNA\_Damage\_Score} \in [25.00, 49.97]$ ($\mu = 37.58, \sigma = 7.25$)
 - **High:** $\text{DNA\_Damage\_Score} \in [50.00, 68.26]$ ($\mu = 58.19, \sigma = 4.63$)
 
-Furthermore, destructive endpoint assays (`GammaH2AX_Foci`, `ROS_Level`, `Cell_Viability`) exhibit extreme collinearity ($|r| > 0.985$) with `DNA_Damage_Score`.  
+Furthermore, destructive endpoint assays (`GammaH2AX_Foci`, `ROS_Level`, `Cell_Viability`) exhibit extreme collinearity ($|r| > 0.985$) with `DNA_Damage_Score`.
 **Methodological Safeguard:** All 5 endpoint assays and the regression target were strictly excluded from the feature space during classification model training. Models were forced to learn the non-trivial mapping from physical quantum sensor observables directly to biological damage classes.
 
 ---
@@ -54,18 +54,23 @@ Furthermore, destructive endpoint assays (`GammaH2AX_Foci`, `ROS_Level`, `Cell_V
 ### 3.1 Preprocessing Pipeline
 Input vectors $\mathbf{x} \in \mathbb{R}^7$ were standardized via training-set statistics:
 $$\tilde{\mathbf{x}} = \mathbf{\Sigma}^{-1/2} (\mathbf{x} - \boldsymbol{\mu})$$
-For input into the 4-qubit quantum simulator, an orthogonal Principal Component Analysis (PCA) projection was computed:
+For input into the 4-qubit quantum circuits, an orthogonal Principal Component Analysis (PCA) projection was computed:
 $$\mathbf{z} = \mathbf{W}_{\text{PCA}}^T \tilde{\mathbf{x}}, \quad \mathbf{z} \in \mathbb{R}^4$$
 The 4 principal components captured **99.62%** of the cumulative variance across the 7 sensor features, preserving virtually all physical variance in an orthogonal representation.
 
 ### 3.2 Classical Models
-1. **Multinomial Logistic Regression:**  
+1. **Multinomial Logistic Regression:**
    $$P(y = c | \tilde{\mathbf{x}}) = \frac{\exp(\mathbf{w}_c^T \tilde{\mathbf{x}} + b_c)}{\sum_{k=1}^3 \exp(\mathbf{w}_k^T \tilde{\mathbf{x}} + b_k)}$$
 2. **Random Forest Classifier:** Ensemble of 100 decorrelated decision trees with maximum tree depth of 12 and Gini impurity splitting.
 3. **XGBoost Classifier:** Gradient-boosted decision trees minimizing regularized multi-class log-loss over 100 boosting rounds with learning rate $\eta = 0.1$.
-4. **Ridge & Random Forest Regressors:** Continuous estimation of `DNA_Damage_Score` minimizing squared $L_2$ error.
+4. **Classical Support Vector Machine (RBF SVM):**
+   Dual soft-margin formulation with Radial Basis Function kernel:
+   $$K_{\text{RBF}}(\mathbf{x}_i, \mathbf{x}_j) = \exp\left(-\gamma \|\mathbf{x}_i - \mathbf{x}_j\|^2\right)$$
+   Hyperparameters were tuned via 5-fold cross-validation on training data, identifying optimal parameters $C = 5.0$, $\gamma = 0.05$, with class-balanced weighting:
+   $$w_c = \frac{N_{\text{samples}}}{N_{\text{classes}} \cdot N_c}$$
+5. **Ridge & Random Forest Regressors:** Continuous estimation of `DNA_Damage_Score` minimizing squared $L_2$ error.
 
-### 3.3 Variational Quantum Classifier (VQC)
+### 3.3 Variational Quantum Classifier (PennyLane VQC)
 A genuine 4-qubit parameterized quantum circuit was implemented in PennyLane using the `default.qubit` statevector simulator:
 - **State Initialization:** $|0\rangle^{\otimes 4}$.
 - **Angle Embedding:** The 4 PCA features parameterize Pauli-$Y$ single-qubit rotations:
@@ -75,66 +80,89 @@ A genuine 4-qubit parameterized quantum circuit was implemented in PennyLane usi
   where $R(\alpha, \beta, \gamma) = R_z(\gamma) R_y(\beta) R_z(\alpha)$ and $\mathcal{U}_{\text{ent}}$ consists of cyclic CNOT gates between adjacent qubits. Total variational parameters: $2 \times 4 \times 3 = 24$.
 - **Measurement & Readout:** Expectation values of the Pauli-$Z$ observable were measured on wires 0, 1, and 2:
   $$\langle Z_k \rangle = \langle 0 | \mathcal{U}_{\text{emb}}^\dagger \mathcal{U}_{\text{var}}^\dagger Z_k \mathcal{U}_{\text{var}} \mathcal{U}_{\text{emb}} | 0 \rangle, \quad k \in \{0, 1, 2\}$$
-- **Hybrid Logits & Loss:**  
+- **Hybrid Logits & Loss:**
   $$\mathbf{s} = \mathbf{w}_{\text{scale}} \odot \begin{bmatrix} \langle Z_0 \rangle \\ \langle Z_1 \rangle \\ \langle Z_2 \rangle \end{bmatrix} + \mathbf{b}_{\text{bias}}, \quad \mathcal{L} = -\sum_{c=1}^3 y_c \log \left(\frac{\exp(s_c)}{\sum_j \exp(s_j)}\right)$$
   Trained on a stratified subset of $N_{\text{sub}} = 360$ samples over 45 epochs using the Adam optimizer ($\text{lr} = 0.03$, batch size = 32) via exact quantum backpropagation.
+
+### 3.4 Quantum Support Vector Machine (Qiskit QSVM)
+Unlike variational algorithms that tune rotation gate angles via non-convex gradient descent, the Quantum Support Vector Machine evaluates an exact inner-product kernel in a $2^4 = 16$-dimensional complex Hilbert space $\mathcal{H}$:
+- **Quantum Feature Map:** Qiskit's second-order Pauli expansion $ZZ$-feature map (`ZZFeatureMap`) on $n=4$ qubits with 1 repetition and linear entanglement topology:
+  $$\mathcal{U}_{\Phi}(\mathbf{x}) = \exp\left(i \sum_{j=1}^n \phi_j(\mathbf{x}) Z_j + i \sum_{j < k} \phi_{jk}(\mathbf{x}) Z_j Z_k\right) H^{\otimes n}$$
+  where single-qubit phases are $\phi_j(\mathbf{x}) = 2 s x_j$ and two-qubit entangling phases are $\phi_{jk}(\mathbf{x}) = 2 s^2 (\pi - x_j)(\pi - x_k)$, using phase scale factor $s = 0.15$ to constrain arguments within $[-\pi, \pi]$ and avoid periodic angle wrapping.
+- **Quantum State Fidelity Kernel:**
+  For any pair of input vectors $\mathbf{x}_1, \mathbf{x}_2$, the quantum kernel evaluates the transition probability (fidelity) between quantum states:
+  $$K(\mathbf{x}_1, \mathbf{x}_2) = |\langle \Phi(\mathbf{x}_1) | \Phi(\mathbf{x}_2) \rangle|^2 = |\langle 0^{\otimes n} | \mathcal{U}_\Phi^\dagger(\mathbf{x}_1) \mathcal{U}_\Phi(\mathbf{x}_2) | 0^{\otimes n} \rangle|^2$$
+- **Mathematical Kernel Properties:**
+  1. *Hermiticity / Symmetry:* $K(\mathbf{x}_1, \mathbf{x}_2) = K(\mathbf{x}_2, \mathbf{x}_1)$ because $|\langle \Phi_1 | \Phi_2 \rangle|^2 = |\langle \Phi_2 | \Phi_1 \rangle|^2$.
+  2. *Normalization:* $K(\mathbf{x}_i, \mathbf{x}_i) = |\langle \Phi_i | \Phi_i \rangle|^2 = 1.0$.
+  3. *Positive Semi-Definiteness:* The Gram matrix $\mathbf{K} \in \mathbb{R}^{N \times N}$ is a valid Gramian of projection operators, ensuring all eigenvalues $\lambda_i \ge 0$.
+- **Convex Dual Optimization:**
+  The Gram matrix is supplied to a precomputed support vector classifier solving the convex dual problem:
+  $$\max_{\boldsymbol{\alpha}} \sum_{i=1}^N \alpha_i - \frac{1}{2} \sum_{i,j=1}^N \alpha_i \alpha_j y_i y_j K(\mathbf{x}_i, \mathbf{x}_j) \quad \text{s.t.} \quad 0 \le \alpha_i \le C, \; \sum_{i=1}^N \alpha_i y_i = 0$$
+  Trained on $N = 360$ stratified samples (aligned with the VQC training size) with $C = 5.0$ and `class_weight='balanced'`.
 
 ---
 
 ## 4. Empirical Results & Comparative Benchmark
 
-Models were evaluated on a held-out, stratified test set of $N_{\text{test}} = 1,000$ samples (244 Low, 370 Moderate, 386 High).
+All models were evaluated on the identical held-out, stratified test set of $N_{\text{test}} = 1,000$ samples (244 Low, 370 Moderate, 386 High).
 
-### 4.1 Classification Performance Benchmark
-| Model | Type | Accuracy (%) | Macro-F1 | Macro-Precision | Macro-Recall | Train Time |
-|---|---|---|---|---|---|---|
-| **Logistic Regression** | Classical ML | **96.10%** | **0.9614** | **0.9627** | **0.9603** | 0.04 s |
-| **XGBoost** | Classical Ensemble | **95.90%** | **0.9594** | **0.9597** | **0.9591** | 0.28 s |
-| **Random Forest** | Classical Ensemble | **95.80%** | **0.9586** | **0.9590** | **0.9582** | 0.35 s |
-| **PennyLane 4-Qubit VQC** | Quantum Neural Net | **67.70%** | **0.5601** | **0.6430** | **0.6110** | 2.90 s |
+### 4.1 Master Classification Benchmark Leaderboard
+| Model | Architecture / Method | Accuracy (%) | Macro-F1 | Weighted-F1 | Multiclass ROC-AUC | Gen. Error | Train Time (s) | Inference Time (s) |
+|---|---|---|---|---|---|---|---|---|
+| **Classical SVM** | SVC (RBF, $C=5.0, \gamma=0.05$) | **96.30%** | **0.9634** | **0.9630** | **0.9971** | **0.0370** | 8.59 s | 0.0142 s |
+| **Logistic Regression** | Multinomial Linear Logits | **96.10%** | **0.9614** | **0.9611** | **0.9971** | **0.0390** | 0.04 s | 0.0002 s |
+| **Qiskit 4-Qubit QSVM** | Fidelity Kernel ($ZZ$-map, $s=0.15$) | **95.90%** | **0.9601** | **0.9589** | **0.9968** | **0.0410** | 0.10 s | 0.3627 s |
+| **XGBoost** | 100 Boosted Trees ($\eta=0.1$) | **95.90%** | **0.9594** | **0.9590** | **0.9964** | **0.0410** | 0.09 s | 0.0032 s |
+| **Random Forest** | 100 Trees ($\text{depth}=12$) | **95.80%** | **0.9586** | **0.9581** | **0.9975** | **0.0420** | 0.24 s | 0.0056 s |
+| **PennyLane 4-Qubit VQC** | 2 StronglyEntangling Layers | **67.70%** | **0.5601** | **0.6199** | **0.8124** | **0.3230** | 2.90 s | 1.2500 s |
 
 ### 4.2 Secondary Regression Performance (`DNA_Damage_Score`)
 - **Ridge Regression:** $\text{RMSE} = 1.4472$, $\text{MAE} = 1.1462$, $R^2 = 0.9940$
 - **Random Forest Regressor:** $\text{RMSE} = 1.5251$, $\text{MAE} = 1.2068$, $R^2 = 0.9933$
 
 ### 4.3 Detailed Confusion Matrix Breakdown (Test N = 1,000)
-- **Logistic Regression:**
-  - True Low (244): 233 predicted Low, 0 Moderate, 11 High
-  - True Moderate (370): 0 predicted Low, 357 Moderate, 13 High
-  - True High (386): 7 predicted Low, 8 Moderate, 371 High
-- **PennyLane 4-Qubit VQC:**
+- **Classical SVM (Total Correct: 963 / 1,000):**
+  - True Low (244): 234 predicted Low, 1 Moderate, 9 High
+  - True Moderate (370): 0 predicted Low, 359 Moderate, 11 High
+  - True High (386): 8 predicted Low, 8 Moderate, 370 High
+- **Qiskit 4-Qubit QSVM (Total Correct: 959 / 1,000):**
+  - True Low (244): 235 predicted Low, 0 Moderate, 9 High
+  - True Moderate (370): 0 predicted Low, 356 Moderate, 14 High
+  - True High (386): 9 predicted Low, 9 Moderate, 368 High
+- **PennyLane 4-Qubit VQC (Total Correct: 677 / 1,000):**
   - True Low (244): 152 predicted Low, 81 Moderate, 11 High
   - True Moderate (370): 39 predicted Low, 276 Moderate, 55 High
   - True High (386): 48 predicted Low, 89 Moderate, 249 High
 
-### 4.4 Quantum Convergence Dynamics
-The VQC showed genuine gradient descent behavior across 45 epochs:
-- Epoch 1: Loss = 0.9864, Train Accuracy = 58.61%
-- Epoch 10: Loss = 0.5915, Train Accuracy = 68.89%
-- Epoch 20: Loss = 0.5616, Train Accuracy = 66.39%
-- Epoch 45: Loss = 0.5486, Train Accuracy = 68.33%  
-Test set generalization aligned closely with training performance (67.70% test vs 68.33% train), showing that the circuit learned a non-trivial classification boundary without severe overfitting.
-
 ---
 
-## 5. Scientific Discussion & Limitations
+## 5. Scientific Discussion & Critical Insights
 
-### 5.1 Analysis of the Quantum-Classical Performance Gap
-Classical models achieved ~96% accuracy, outperforming the 4-qubit VQC (67.70%) by nearly 28.4 percentage points. The reasons for this outcome are rooted in learning theory:
-1. **Curse of Dimensionality & Barren Plateaus:** Shallow parameterized quantum circuits suffer from restricted expressivity when constrained to 4 qubits and 2 entangling layers. Increasing depth rapidly introduces barren plateau phenomena where gradients vanish exponentially.
-2. **Nature of Tabular Sensor Data:** Classical gradient boosting and regularized linear hyperplanes naturally fit tabular feature manifolds where monotonic relationships dominate (e.g., $T_1$ decay scaling with radiation dose). Quantum Hilbert spaces do not inherently provide an inductive bias suited for simple monotonic scalar correlations.
-3. **No Empirical Quantum Advantage:** We report unequivocally that **no quantum advantage was observed** on this task. Claims of quantum supremacy on low-dimensional tabular datasets are unsupported by empirical data.
+### 5.1 Why QSVM Drastically Outperforms VQC (95.90% vs 67.70%)
+A central empirical contribution of this study is the dramatic performance disparity between two quantum machine learning paradigms operating on the identical 4-dimensional PCA quantum subspace:
+1. **Convex Quadratic Optimization vs Non-Convex Gradient Optimization:**
+   The Variational Quantum Classifier (VQC) optimizes 24 gate rotation angles using gradient descent through parameterized quantum circuits. In low-depth circuits, the loss landscape contains poor local minima; in higher-depth circuits, the loss landscape becomes exponentially flat (barren plateaus). Consequently, the VQC saturated at 67.70% accuracy. Conversely, the QSVM transforms the learning task into a convex quadratic programming problem in the dual formulation, guaranteeing convergence to the global optimum of the margin classifier.
+2. **Phase Scaling in Non-Periodic Embeddings:**
+   Standard Gaussian-distributed PCA components have dynamic range $[-3, 3]$. Because $ZZ$-feature maps apply nonlinear quadratic phase interactions $\phi_{jk}(\mathbf{x}) \propto x_j x_k$, unscaled PCA features wrap around $[-\pi, \pi]$ multiple times, causing artificial interference and scrambling Hilbert space distances. Introducing the optimal scaling factor $s = 0.15$ bounded phase rotations within the linear sensitivity regime, producing a structured Gram matrix where biological classes form distinct clusters in state fidelity space.
 
-### 5.2 Clarification on Problem 7 ("Quantum-Centric Image Processing")
-We emphasize the critical distinction between this research and Problem 7:
-- **Tabular Sensor Telemetry Only:** This dataset consists purely of 7 continuous physical scalar values per biosample. It contains zero pixel matrices, spatial coordinates, or microscopy images.
-- **Absence of Image Processing:** No convolutional layers, image transforms, or quantum computer vision methods (such as Quantum CNNs or Quantum Fourier Transforms on 2D pixel fields) were implemented because the underlying physical data does not have a 2D spatial image format.
+### 5.2 Analysis of Quantum Advantage
+We examine whether the QSVM demonstrates empirical quantum advantage:
+- **Expressive Parity:** The QSVM achieves **95.90%** accuracy, closely matching the classical ensemble models (Random Forest: 95.80%, XGBoost: 95.90%, LogReg: 96.10%).
+- **Classical Superiority:** The Classical RBF SVM achieved the highest overall accuracy (**96.30%**), outperforming the QSVM by 0.40 percentage points.
+- **Computational Scaling:** Classical SVM evaluates RBF kernels at $O(D)$ floating point operations per pair ($D=7$), achieving 14 ms inference over 1,000 samples. The simulated QSVM evaluates $2^n$-dimensional statevector tensor contractions, requiring 363 ms inference.
+- **Scientific Verdict:** **No quantum advantage is demonstrated on this tabular dosimetry dataset.** Classical kernel methods and gradient boosted trees remain the optimal computational tools for low-dimensional tabular sensor data. Quantum advantage requires structured problems with cryptographically hard kernels or high-dimensional entangled quantum state inputs.
+
+### 5.3 Clarification on Problem 7 ("Quantum-Centric Image Processing")
+We reiterate the critical distinction between this research and Problem 7:
+- **Tabular Sensor Telemetry Only:** This dataset consists purely of 7 continuous physical scalar values per biosample. It contains zero pixel matrices, spatial coordinates, histological slides, or microscopic image frames.
+- **Absence of Image Processing:** No convolutional layers, image transforms, or quantum computer vision methods (such as Quantum CNNs or Quantum Fourier Transforms on 2D pixel fields) were implemented because the underlying physical data does not possess a 2D spatial image format.
 - Claiming image processing on tabular spectroscopic scalars would represent scientific misrepresentation.
 
-### 5.3 Clinical Validity Boundaries
-The models and sensors evaluated herein represent laboratory nanophotonic instrumentation. While the high regression fidelity ($R^2 = 0.994$) supports the feasibility of NV diamond relaxometry for estimating cellular damage, this work does not constitute a clinically cleared medical device. Translation to in vivo diagnostic settings requires addressing tissue autofluorescence, nanodiamond biocompatibility, and clinical trials.
+### 5.4 Preclinical Validity Boundaries
+The models and sensors evaluated herein represent simulated laboratory nanophotonic instrumentation. While the high regression fidelity ($R^2 = 0.994$) supports the biophysical premise of NV diamond relaxometry for non-invasive radiotoxicity estimation, this framework does not constitute a clinically validated medical device.
 
 ---
 
 ## 6. Conclusion
-This study provides a rigorous, transparent benchmark for quantum biological dosimetry. By eliminating target leakage, we established that non-invasive quantum sensor telemetry (ODMR, $T_1, T_2$, QD emission) contains sufficient physical information for classical ML models to predict radiotoxicity with 96.1% accuracy and $R^2 = 0.994$. While a 4-qubit PennyLane VQC demonstrated genuine learning dynamics, classical ML remains decisively superior for tabular biodosimetry. Future investigations should focus on hybrid quantum kernel estimation and multi-qubit fault-tolerant quantum hardware once high-dimensional quantum-centric imaging datasets become available.
+This study provides a transparent, reproducible benchmark integrating Classical ML, Classical SVM, Variational Quantum Classifiers (VQC), and Quantum Support Vector Machines (QSVM) for quantum biological dosimetry. By isolating physical quantum sensor telemetry from downstream assay leakage, we proved that non-invasive quantum sensor observables ($NV^-$ ODMR shift, $T_1/T_2$ relaxation, and QD photoluminescence) reliably predict radiotoxicity categories with up to 96.30% accuracy. Furthermore, we showed that quantum kernel methods (QSVM, 95.90%) far surpass variational quantum classifiers (VQC, 67.70%) on tabular physical data by avoiding barren plateaus through convex dual optimization. All code, data splits, models, and diagnostic plots are fully preserved and reproducible.
