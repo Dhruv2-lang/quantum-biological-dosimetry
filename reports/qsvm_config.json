@@ -13,5 +13,5 @@
   "random_state": 42,
   "training_subset_size": 360,
   "test_sample_count": 1000,
-  "qiskit_version": "2.6.2"
+  "qiskit_version": "2.4.0"
 }
