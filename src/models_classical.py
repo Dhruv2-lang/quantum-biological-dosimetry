@@ -10,7 +10,6 @@ Saves all model artifacts, metric reports, and evaluation plots.
 """
 
 import os
-from pathlib import Path
 import json
 import time
 import warnings
@@ -40,10 +39,10 @@ from sklearn.metrics import (
     r2_score
 )
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-MODELS_DIR = PROJECT_ROOT / "models"
-REPORTS_DIR = PROJECT_ROOT / "reports"
-FIGURES_DIR = REPORTS_DIR / "figures"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+REPORTS_DIR = os.path.join(BASE_DIR, "reports")
+FIGURES_DIR = os.path.join(REPORTS_DIR, "figures")
 
 def train_and_evaluate_classical():
     os.makedirs(MODELS_DIR, exist_ok=True)
@@ -52,7 +51,7 @@ def train_and_evaluate_classical():
     splits_path = os.path.join(MODELS_DIR, "data_splits.joblib")
     if not os.path.exists(splits_path):
         raise FileNotFoundError("data_splits.joblib not found. Run preprocessing.py first.")
-
+    
     splits = joblib.load(splits_path)
     X_train = splits["X_train_scaled"]
     X_test = splits["X_test_scaled"]
@@ -63,7 +62,7 @@ def train_and_evaluate_classical():
     class_names = splits["class_names"]
 
     print("--- Training Classical Classification Models ---")
-
+    
     classification_results = {}
     fitted_models = {}
 
@@ -131,10 +130,10 @@ def train_and_evaluate_classical():
     print("Training XGBoost...")
     t0 = time.time()
     xgb_clf = xgb.XGBClassifier(
-        n_estimators=100,
-        max_depth=6,
-        learning_rate=0.1,
-        random_state=42,
+        n_estimators=100, 
+        max_depth=6, 
+        learning_rate=0.1, 
+        random_state=42, 
         eval_metric="mlogloss",
         n_jobs=1
     )
@@ -171,12 +170,12 @@ def train_and_evaluate_classical():
         "gamma": ["scale", "auto", 0.05, 0.1]
     }
     base_svc = SVC(kernel="rbf", probability=True, class_weight="balanced", random_state=42)
-
+    
     t0 = time.time()
     grid_svm = GridSearchCV(base_svc, param_grid_svm, cv=5, scoring="f1_macro", n_jobs=1)
     grid_svm.fit(X_train, y_train_cls)
     t_train_svm = time.time() - t0
-
+    
     best_svm = grid_svm.best_estimator_
     print(f"Best Classical SVM Parameters: {grid_svm.best_params_} (CV Macro-F1: {grid_svm.best_score_:.4f})")
 
@@ -264,7 +263,7 @@ def train_and_evaluate_classical():
         t0 = time.time()
         reg_model.fit(X_train, y_train_reg)
         t_reg_train = time.time() - t0
-
+        
         t0 = time.time()
         y_reg_pred = reg_model.predict(X_test)
         t_reg_inf = time.time() - t0
