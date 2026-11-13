@@ -38,9 +38,9 @@ from qiskit.circuit.library import zz_feature_map, ZZFeatureMap
 from qiskit.quantum_info import Statevector
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
-REPORTS_DIR = os.path.join(PROJECT_ROOT, "reports")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+REPORTS_DIR = os.path.join(BASE_DIR, "reports")
 FIGURES_DIR = os.path.join(REPORTS_DIR, "figures")
 
 NUM_QUBITS = 4
@@ -57,6 +57,8 @@ class QSVMClassifier:
     Computes fidelity kernel matrix K(x1, x2) = |<phi(x1)|phi(x2)>|^2
     using Qiskit's ZZFeatureMap and fits a precomputed SVC.
     """
+    __module__ = "src.models_qsvm"
+
     def __init__(
         self,
         feature_dimension=NUM_QUBITS,
@@ -85,34 +87,6 @@ class QSVMClassifier:
         self.classes_ = None
         self._feature_map = None
         self._qiskit_kernel = None
-
-    def __getstate__(self):
-        """
-        Serialize only stable training state.
-
-        Qiskit circuits and FidelityQuantumKernel instances are deliberately
-        excluded because their internal ParameterExpression objects can be
-        incompatible across Qiskit releases. They are recreated lazily.
-        """
-        state = self.__dict__.copy()
-        state["_feature_map"] = None
-        state["_qiskit_kernel"] = None
-        return state
-
-    def __setstate__(self, state):
-        """Restore the fitted QSVM and recreate Qiskit caches lazily."""
-        self.__dict__.update(state)
-        self._feature_map = None
-        self._qiskit_kernel = None
-
-        # Keep compatibility with artifacts created before these attributes
-        # were introduced.
-        if not hasattr(self, "X_train_"):
-            self.X_train_ = None
-        if not hasattr(self, "sv_train_"):
-            self.sv_train_ = None
-        if not hasattr(self, "classes_"):
-            self.classes_ = getattr(getattr(self, "svc", None), "classes_", None)
 
     @property
     def feature_map(self):
@@ -163,7 +137,7 @@ class QSVMClassifier:
             K = np.abs(overlaps) ** 2
             np.fill_diagonal(K, 1.0)
             return K
-
+        
         sv2 = self._compute_statevectors(X2)
         overlaps = sv1 @ sv2.conj().T
         return np.abs(overlaps) ** 2
@@ -174,7 +148,7 @@ class QSVMClassifier:
         """
         self.X_train_ = np.asarray(X, dtype=np.float64)
         self.sv_train_ = self._compute_statevectors(self.X_train_)
-
+        
         overlaps = self.sv_train_ @ self.sv_train_.conj().T
         K_train = np.abs(overlaps) ** 2
         np.fill_diagonal(K_train, 1.0)
@@ -183,38 +157,28 @@ class QSVMClassifier:
         self.classes_ = self.svc.classes_
         return self
 
-    def _kernel_against_training(self, X):
-        """Compute the quantum fidelity kernel between X and fitted training states."""
+    def predict_proba(self, X):
+        """
+        Calculates test-train quantum kernel matrix and predicts class probabilities.
+        """
         if self.sv_train_ is None:
-            raise ValueError("QSVMClassifier must be fitted before prediction.")
-
+            raise ValueError("QSVMClassifier must be fitted before predict_proba is called.")
+        
         X_arr = np.asarray(X, dtype=np.float64)
         if X_arr.ndim == 1:
             X_arr = X_arr.reshape(1, -1)
-        if X_arr.ndim != 2 or X_arr.shape[1] != self.feature_dimension:
-            raise ValueError(
-                f"Expected input with {self.feature_dimension} features; "
-                f"received shape {X_arr.shape}."
-            )
 
         sv_test = self._compute_statevectors(X_arr)
         overlaps = sv_test @ self.sv_train_.conj().T
-        return np.abs(overlaps) ** 2
-
-    def predict_proba(self, X):
-        """Calculate test-to-training quantum fidelity kernels and class probabilities."""
-        K_test = self._kernel_against_training(X)
+        K_test = np.abs(overlaps) ** 2
         return self.svc.predict_proba(K_test)
 
     def predict(self, X):
         """
-        Predict original class labels using the fitted precomputed-kernel SVC.
-
-        Calling SVC.predict preserves the classifier's actual class labels and
-        avoids assuming that labels are zero-based probability-column indices.
+        Predicts classes for input samples.
         """
-        K_test = self._kernel_against_training(X)
-        return self.svc.predict(K_test)
+        probs = self.predict_proba(X)
+        return np.argmax(probs, axis=1)
 
 
 def train_and_evaluate_qsvm(subset_size=DEFAULT_TRAIN_SUBSET):
@@ -286,13 +250,11 @@ def train_and_evaluate_qsvm(subset_size=DEFAULT_TRAIN_SUBSET):
     print(f"  Accuracy: {acc*100:.2f}% | Macro-F1: {macro_f1:.4f} | ROC-AUC: {roc_auc:.4f}")
     print(f"  Inference time (1,000 test samples): {inf_time:.3f} s")
 
-    # 3. Save model artifacts as a plain state dictionary.
-    # This avoids pickling the class object while this module is executing
-    # as __main__ via `python -m src.models_qsvm`.
+    # 3. Save model artifacts
     qsvm_path1 = os.path.join(MODELS_DIR, "qsvm_classifier.joblib")
     qsvm_path2 = os.path.join(MODELS_DIR, "qsvm.joblib")
-    _save_qsvm_classifier(qsvm, qsvm_path1)
-    _save_qsvm_classifier(qsvm, qsvm_path2)
+    joblib.dump(qsvm, qsvm_path1)
+    joblib.dump(qsvm, qsvm_path2)
     print(f"Saved QSVM model to {qsvm_path1}")
 
     # 4. Save QSVM config
@@ -378,54 +340,11 @@ def train_and_evaluate_qsvm(subset_size=DEFAULT_TRAIN_SUBSET):
     return metrics
 
 
-def _save_qsvm_classifier(model, model_path):
-    """Save fitted QSVM state without pickling the Python class object."""
-    if not isinstance(model, QSVMClassifier):
-        raise TypeError("model must be a fitted QSVMClassifier")
-    if model.sv_train_ is None or not hasattr(model.svc, "support_"):
-        raise ValueError("Cannot save an unfitted QSVMClassifier")
-
-    payload = {
-        "artifact_type": "quantum_biological_dosimetry.qsvm",
-        "artifact_version": 1,
-        "state": model.__getstate__(),
-    }
-    joblib.dump(payload, model_path, compress=3)
-
-
 def load_qsvm_classifier(model_path=None):
-    """Load a state-dictionary QSVM artifact and reconstruct its Python wrapper."""
+    """Utility to load trained QSVM classifier."""
     if model_path is None:
         model_path = os.path.join(MODELS_DIR, "qsvm_classifier.joblib")
-
-    if not os.path.isfile(model_path):
-        raise FileNotFoundError(
-            f"QSVM model not found at '{model_path}'. "
-            "Run `python -m src.models_qsvm` to train and save it."
-        )
-
-    try:
-        payload = joblib.load(model_path)
-    except Exception as exc:
-        raise RuntimeError(
-            "Could not load this QSVM artifact. It may be an older artifact "
-            "containing an incompatible Qiskit object. Back it up and retrain "
-            "using `python -m src.models_qsvm`."
-        ) from exc
-
-    if not isinstance(payload, dict) or payload.get("artifact_type") != \
-            "quantum_biological_dosimetry.qsvm":
-        raise ValueError(
-            "Unsupported or legacy QSVM artifact format. Back up the old "
-            "artifact and retrain using `python -m src.models_qsvm`."
-        )
-
-    model = QSVMClassifier()
-    model.__setstate__(payload["state"])
-
-    if model.sv_train_ is None or not hasattr(model.svc, "support_"):
-        raise ValueError("The QSVM artifact does not contain a fitted classifier.")
-    return model
+    return joblib.load(model_path)
 
 
 if __name__ == "__main__":
