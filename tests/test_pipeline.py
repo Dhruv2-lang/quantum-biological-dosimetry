@@ -9,11 +9,13 @@ import numpy as np
 import pandas as pd
 
 import sys
-sys.path.insert(0, "/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry")
+WORKSPACE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if WORKSPACE_DIR not in sys.path:
+    sys.path.insert(0, WORKSPACE_DIR)
 
 from src.preprocessing import PreprocessingPipeline, SENSOR_FEATURES, TARGET_CLASS, TARGET_REG
 
-DATA_PATH = "/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry/data/Quantum_Biological_Dosimetry_Dataset_5000.csv"
+DATA_PATH = os.path.join(WORKSPACE_DIR, "data", "Quantum_Biological_Dosimetry_Dataset_5000.csv")
 
 class TestDataPipeline(unittest.TestCase):
     def setUp(self):

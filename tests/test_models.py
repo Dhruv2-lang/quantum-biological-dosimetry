@@ -96,10 +96,10 @@ class TestModelInference(unittest.TestCase):
         subset_X = self.qsvm.X_train_[:60]
         K_sub = self.qsvm.evaluate_kernel(subset_X)
         self.assertEqual(K_sub.shape, (60, 60))
-
+        
         # 1. Symmetry / Hermiticity: K == K.T
         np.testing.assert_allclose(K_sub, K_sub.T, atol=1e-6, err_msg="Quantum kernel matrix is not symmetric")
-
+        
         # 2. Normalization: K_ii == 1.0 (state fidelity with itself is unity)
         diag = np.diag(K_sub)
         np.testing.assert_allclose(diag, np.ones_like(diag), atol=1e-5, err_msg="Quantum kernel diagonal is not ~1.0")

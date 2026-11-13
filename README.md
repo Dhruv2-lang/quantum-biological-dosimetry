@@ -86,7 +86,7 @@ The project operates on `data/Quantum_Biological_Dosimetry_Dataset_5000.csv` con
 
 ## 🛡️ Target Leakage Prevention
 
-`Radiotoxicity_Class` is a direct threshold partition of `DNA_Damage_Score`. Feeding `DNA_Damage_Score` or collinear downstream assays into a classifier would yield trivial 100% accuracy with zero real-world utility.
+`Radiotoxicity_Class` is a direct threshold partition of `DNA_Damage_Score`. Feeding `DNA_Damage_Score` or collinear downstream assays into a classifier would yield trivial 100% accuracy with zero real-world utility. 
 
 **Enforced Rule:** All classification models are strictly trained on the 7 non-invasive physical sensor features. The preprocessing pipeline enforces this quarantine in `src/preprocessing.py`, verified by automated tests in `tests/test_pipeline.py`.
 

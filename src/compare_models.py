@@ -36,8 +36,8 @@ if BASE_DIR not in sys.path:
 
 from src.models_qsvm import QSVMClassifier, load_qsvm_classifier
 
-MODELS_DIR = "/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry/models"
-REPORTS_DIR = "/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry/reports"
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+REPORTS_DIR = os.path.join(BASE_DIR, "reports")
 FIGURES_DIR = os.path.join(REPORTS_DIR, "figures")
 
 def generate_comparisons():
@@ -334,7 +334,7 @@ def generate_comparisons():
         if os.path.exists(m_path):
             m_obj = joblib.load(m_path)
             y_score = m_obj.predict_proba(X_eval)
-
+            
             # Compute macro-average ROC curve
             all_fpr = np.unique(np.concatenate([roc_curve(y_test_bin[:, i], y_score[:, i])[0] for i in range(n_classes)]))
             mean_tpr = np.zeros_like(all_fpr)
