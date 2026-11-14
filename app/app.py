@@ -46,13 +46,17 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if BASE_DIR not in sys.path:
-    sys.path.insert(0, BASE_DIR)
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(APP_DIR)
+for _p in (BASE_DIR, APP_DIR):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 from src.preprocessing import PreprocessingPipeline
-from src.models_quantum import load_qnn_classifier, TrainedQNNWrapper
-from src.models_qsvm import load_qsvm_classifier, QSVMClassifier
+# NOTE: src.models_quantum (PennyLane) and src.models_qsvm (Qiskit) are imported lazily inside
+# load_models_and_preprocessor() so the analysis pages open instantly and don't need those
+# heavy libraries unless you actually run an inference.
+from model_explorer import render_model_explorer, render_confusion_grid_section
 
 DATA_PATH = os.path.join(BASE_DIR, "data", "Quantum_Biological_Dosimetry_Dataset_5000.csv")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
@@ -69,7 +73,11 @@ SENSOR_FEATURES = [
     "QD_Emission_nm"
 ]
 
-CLASS_NAMES = ["Low", "Moderate", "High"]
+# Integer class index -> name. This MUST match sklearn's LabelEncoder (alphabetical) order used
+# when the models were trained: 0=High, 1=Low, 2=Moderate. (Not Low/Moderate/High!)
+CLASS_NAMES = ["High", "Low", "Moderate"]
+# Natural severity order, used only for *displaying* classes.
+DISPLAY_ORDER = ["Low", "Moderate", "High"]
 
 # Page configuration
 st.set_page_config(
@@ -102,7 +110,14 @@ def load_data():
 
 @st.cache_resource
 def load_models_and_preprocessor():
+    from src.models_quantum import load_qnn_classifier
+    from src.models_qsvm import load_qsvm_classifier
+
     preprocessor = PreprocessingPipeline.load(os.path.join(MODELS_DIR, "preprocessor_bundle.joblib"))
+    encoder_classes = [str(c) for c in preprocessor.label_encoder.classes_]
+    assert encoder_classes == CLASS_NAMES, (
+        f"CLASS_NAMES {CLASS_NAMES} does not match the preprocessor's label encoder {encoder_classes}"
+    )
     
     xgb_model = joblib.load(os.path.join(MODELS_DIR, "xgboost.joblib"))
     if hasattr(xgb_model, "set_params"):
@@ -152,6 +167,7 @@ page = st.sidebar.radio(
         "Dataset & Sensor EDA",
         "Single Prediction",
         "Batch CSV Prediction",
+        "Model Explorer",
         "Benchmark Leaderboard",
         "Sensor Physics & Disambiguation"
     ]
@@ -303,8 +319,8 @@ elif page == "Single Prediction":
             prob_df = pd.DataFrame({
                 "Class": CLASS_NAMES,
                 "Probability": probs
-            })
-            st.bar_chart(prob_df.set_index("Class"))
+            }).set_index("Class").loc[DISPLAY_ORDER]
+            st.bar_chart(prob_df)
 
         with res_col2:
             st.markdown("### Secondary Regression Target")
@@ -408,6 +424,10 @@ elif page == "Batch CSV Prediction":
         except Exception as e:
             st.error(f"Error parsing file: {e}")
 
+# ----------------- TAB: MODEL EXPLORER -----------------
+elif page == "Model Explorer":
+    render_model_explorer(REPORTS_DIR, bench_summary, quantum_metrics, qsvm_metrics)
+
 # ----------------- TAB 4: BENCHMARK LEADERBOARD -----------------
 elif page == "Benchmark Leaderboard":
     st.header("📈 Model Benchmark Leaderboard")
@@ -444,7 +464,10 @@ elif page == "Benchmark Leaderboard":
             render_image(os.path.join(FIGURES_DIR, "multiclass_roc_curves.png"), caption="One-vs-Rest Micro-Averaged ROC Curves")
 
         st.subheader("Combined Confusion Matrices (All 6 Models)")
-        render_image(os.path.join(FIGURES_DIR, "all_confusion_matrices_combined.png"), caption="Confusion Matrices across all 6 Evaluated Architectures")
+        # Interactive grid drawn from the analysis cache (correct class labels). The legacy PNG in
+        # reports/figures/ was rendered with mislabeled class axes, so it is only a fallback.
+        if not render_confusion_grid_section(REPORTS_DIR):
+            render_image(os.path.join(FIGURES_DIR, "all_confusion_matrices_combined.png"), caption="Confusion Matrices across all 6 Evaluated Architectures")
 
         col_q1, col_q2 = st.columns(2)
         with col_q1:

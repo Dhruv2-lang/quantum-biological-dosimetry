@@ -87,7 +87,10 @@ class PreprocessingPipeline:
             "y_test_class": y_test_class,
             "y_train_reg": y_train_reg,
             "y_test_reg": y_test_reg,
-            "class_names": self.class_order
+            # IMPORTANT: names must follow the *encoded integer order*. LabelEncoder sorts
+            # alphabetically (High=0, Low=1, Moderate=2), which differs from the display
+            # order in CLASS_ORDER. Using CLASS_ORDER here mislabels every report/figure.
+            "class_names": [str(c) for c in self.label_encoder.classes_]
         }
 
         return data_splits
