@@ -10,6 +10,7 @@ Implements a genuine Quantum Kernel Support Vector Machine using Qiskit and Qisk
 """
 
 import os
+import sys
 import json
 import time
 import warnings
@@ -39,6 +40,12 @@ from qiskit.quantum_info import Statevector
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+# Ensure class is discoverable by pickle under 'src.models_qsvm' when script runs as __main__
+if __name__ == "__main__":
+    sys.modules["src.models_qsvm"] = sys.modules[__name__]
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 REPORTS_DIR = os.path.join(BASE_DIR, "reports")
 FIGURES_DIR = os.path.join(REPORTS_DIR, "figures")
@@ -173,6 +180,18 @@ class QSVMClassifier:
         K_test = np.abs(overlaps) ** 2
         return self.svc.predict_proba(K_test)
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Drop Qiskit circuit objects with ParameterExpression which fail standard unpickling across versions
+        state["_feature_map"] = None
+        state["_qiskit_kernel"] = None
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self._feature_map = None
+        self._qiskit_kernel = None
+
     def predict(self, X):
         """
         Predicts classes for input samples.
@@ -250,7 +269,9 @@ def train_and_evaluate_qsvm(subset_size=DEFAULT_TRAIN_SUBSET):
     print(f"  Accuracy: {acc*100:.2f}% | Macro-F1: {macro_f1:.4f} | ROC-AUC: {roc_auc:.4f}")
     print(f"  Inference time (1,000 test samples): {inf_time:.3f} s")
 
-    # 3. Save model artifacts
+    # 3. Save model artifacts (clear transient Qiskit circuit objects before serialization)
+    qsvm._feature_map = None
+    qsvm._qiskit_kernel = None
     qsvm_path1 = os.path.join(MODELS_DIR, "qsvm_classifier.joblib")
     qsvm_path2 = os.path.join(MODELS_DIR, "qsvm.joblib")
     joblib.dump(qsvm, qsvm_path1)
@@ -341,10 +362,42 @@ def train_and_evaluate_qsvm(subset_size=DEFAULT_TRAIN_SUBSET):
 
 
 def load_qsvm_classifier(model_path=None):
-    """Utility to load trained QSVM classifier."""
+    """Utility to load trained QSVM classifier with compatibility for Qiskit ParameterExpression unpickling."""
     if model_path is None:
         model_path = os.path.join(MODELS_DIR, "qsvm_classifier.joblib")
-    return joblib.load(model_path)
+
+    orig_new = None
+    try:
+        from qiskit.circuit.parameterexpression import ParameterExpression
+        orig_new = ParameterExpression.__new__
+
+        def safe_param_new(cls, *args, **kwargs):
+            if not args and not kwargs:
+                return object.__new__(cls)
+            return orig_new(cls, *args, **kwargs)
+
+        ParameterExpression.__new__ = safe_param_new
+    except Exception:
+        pass
+
+    try:
+        model = joblib.load(model_path)
+        if hasattr(model, "_feature_map"):
+            model._feature_map = None
+        if hasattr(model, "_qiskit_kernel"):
+            model._qiskit_kernel = None
+        return model
+    except Exception as e:
+        print(f"Warning: Failed to load existing QSVM model ({e}). Retraining QSVM...")
+        train_and_evaluate_qsvm()
+        return joblib.load(model_path)
+    finally:
+        if orig_new is not None:
+            try:
+                from qiskit.circuit.parameterexpression import ParameterExpression
+                ParameterExpression.__new__ = orig_new
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":

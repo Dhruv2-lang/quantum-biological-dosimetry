@@ -10,8 +10,8 @@
   "weighted_recall": 0.959,
   "roc_auc": 0.9968,
   "generalization_error": 0.041,
-  "training_time_seconds": 0.1033,
-  "inference_time_seconds": 0.3627,
+  "training_time_seconds": 0.0943,
+  "inference_time_seconds": 0.2327,
   "kernel_properties": {
     "is_symmetric": true,
     "min_eigenvalue": -0.0,
