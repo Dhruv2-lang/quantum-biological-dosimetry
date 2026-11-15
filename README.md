@@ -219,7 +219,8 @@ streamlit run app/app.py
 1. **Dataset & Sensor EDA:** Interactive exploration of 5,000 samples, correlation heatmaps, leakage audit charts, and KDE sensor distributions.
 2. **Single Prediction:** Interactive sliders with clinical exposure presets (Low, Moderate, Severe), supporting all 6 classification models and continuous regression.
 3. **Batch CSV Prediction:** Upload custom sensor CSV files, process batch predictions with selected model, and download scored CSV results with confidence ratings.
-4. **Benchmark Leaderboard:** Full 6-model comparison table and high-resolution diagnostic plots:
+4. **Model Explorer:** One page per model (Logistic Regression, Random Forest, XGBoost, Classical SVM, PennyLane VQC, Qiskit QSVM) with accuracy, macro precision/recall/F1, ROC-AUC, generalization error, latency, interactive confusion matrix, per-class metrics, ROC and precision-recall curves, model-specific internals (coefficients, importances, support vectors, quantum kernel, VQC training), a reported-vs-re-evaluated audit and CSV/JSON export, plus a *Compare all models* view. Reads `reports/model_analysis_cache.joblib` (regenerate with `python src/generate_analysis_cache.py`).
+5. **Benchmark Leaderboard:** Full 6-model comparison table and high-resolution diagnostic plots:
    - Overall Benchmark (Accuracy, Macro-F1, ROC-AUC)
    - Macro Precision, Recall, and F1 Breakdown
    - Generalization Error
@@ -229,7 +230,7 @@ streamlit run app/app.py
    - QSVM Quantum Kernel Gram Matrix Heatmap
    - PennyLane VQC Optimization Trajectory
    - DNA Damage Score Regression Fit
-5. **Sensor Physics & Disambiguation:** Detailed physical explanations of NV ODMR and relaxometry, problem 7 clarification, and scientific appraisal.
+6. **Sensor Physics & Disambiguation:** Detailed physical explanations of NV ODMR and relaxometry, problem 7 clarification, and scientific appraisal.
 
 ---
 
