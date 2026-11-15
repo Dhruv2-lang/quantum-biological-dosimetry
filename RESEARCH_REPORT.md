@@ -3,7 +3,7 @@
 **Author:** Quantum Biophysics & Machine Learning Research Team  
 **Date:** November 2026  
 **Dataset Artifact:** `Quantum_Biological_Dosimetry_Dataset_5000.csv` ($N = 5,000$ verified authentic rows)  
-**Project Workspace:** `/Users/dhruvpratapsingh/.gemini/antigravity/scratch/quantum_biodosimetry`
+**Project Workspace:** `quantum-biological-dosimetry/` (repository root)
 
 ---
 
