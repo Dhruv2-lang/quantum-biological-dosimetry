@@ -72,5 +72,6 @@ class TestDataPipeline(unittest.TestCase):
         self.assertEqual(res["scaled"].shape, (1, 7))
         self.assertEqual(res["pca4"].shape, (1, 4))
 
+
 if __name__ == "__main__":
     unittest.main()
